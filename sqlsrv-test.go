@@ -8,6 +8,8 @@ import (
     _"io/ioutil"
     "os"
     "runtime"
+    "time"
+    "context"
 
     _ "github.com/denisenkom/go-mssqldb"
 )
@@ -29,18 +31,34 @@ type Config struct {
     Misc    interface{} `json:"misc"`    // Empty object
 }
 
-// getDBConnection establishes a connection to the SQL Server database.
-func getDBConnection(dsn string, port int, username string, password string, dbName string) (*sql.DB, error) {
-    connString := Sprintf("sqlserver://%s:%s@%s:%d?database=%s;sslmode=disable", username, password, dsn, port, dbName)
+// SqlSrv_Conn(...) establishes a connection to the SQL Server database.
+// Connection timeout is set to 5 sec.
+func SqlSrv_Conn(dsn string, port int, username string, password string, dbName string) (*sql.DB, error) {
+    connString := Sprintf("sqlserver://%s:%s@%s:%d?database=%s;connection timeout=3", username, password, dsn, port, dbName)
     db, err := sql.Open("sqlserver", connString)
+
+    SqlSrv_Ping(db)
+
     if err != nil {
         return nil, err
     }
     return db, nil
 }
 
+func SqlSrv_Ping(db *sql.DB) {
+    VAR_timeoutSec := 3
+    timeoutSec := time.Duration(VAR_timeoutSec)
+    ctx, cancel := context.WithTimeout(context.Background(), timeoutSec *time.Second)
+    defer cancel()
 
-func read(db *sql.DB, sqlQuery string, callback_flowFunc func(*sql.Rows) error) {
+    if err := db.PingContext(ctx); err != nil {
+        log.Fatalf("Error connecting to the database: %s", err.Error())
+    }
+
+    Println("Connected to the database!")
+}
+
+func SqlSrv_Read(db *sql.DB, sqlQuery string, callback_flowFunc func(*sql.Rows) error) {
     rows, err := db.Query(sqlQuery)
     if err != nil {
         log.Fatal("Error reading records: ", err.Error())
@@ -85,7 +103,7 @@ func GetOsPathSlash() string {
 func main() {
     // workspace\sjm-poc-db
     VAR_thisPath, _ := GetCurrentWorkingDirectory()
-    VAR_pathPrefix := VAR_thisPath + GetOsPathSlash() + "workspace" + GetOsPathSlash() + "sjm-poc-db" + GetOsPathSlash()
+    VAR_pathPrefix := VAR_thisPath + GetOsPathSlash()
     VAR_configFile := VAR_pathPrefix + "sample_config.json"
 
     file, err := os.Open(VAR_configFile)
@@ -114,18 +132,13 @@ func main() {
     sqlsrv_database := config.SQLSrv.SQLDBDbname
     //sqlsrv_stname := config.SQLSrv.SQLDBStname
 
-    db, err := getDBConnection(sqlsrv_dsn, sqlsrv_port, sqlsrv_username, sqlsrv_password, sqlsrv_database)
+    db, err := SqlSrv_Conn(sqlsrv_dsn, sqlsrv_port, sqlsrv_username, sqlsrv_password, sqlsrv_database)
     if err != nil {
         log.Fatal("Error connecting to the database:", err)
     }
     defer db.Close()
 
-    // Test the connection
-    err = db.Ping()
-    if err != nil {
-        log.Fatalf("Error connecting to the database: %s", err.Error())
-    }
-    Println("Connected to the database!")
-
+    
+    
 }
 
