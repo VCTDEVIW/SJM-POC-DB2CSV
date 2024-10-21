@@ -43,7 +43,7 @@ func main() {
 
 		Println()
 		log.Println("MongoDB task running...\n")
-		proc.SqlSrv_RunQuery()
+		proc.MongoDB_RunQuery()
 	}(&wg)
 
 	wg.Wait()

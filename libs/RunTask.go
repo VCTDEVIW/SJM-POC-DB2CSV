@@ -41,7 +41,7 @@ func (load *META_Global) Init_RunTask() {
 	//load.MongoDB_Test()
 	/*
 	load.SqlSrv_RunQuery()
-	load.SqlSrv_RunQuery()
+	load.MongoDB_RunQuery()
 	*/
 }
 
