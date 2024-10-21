@@ -31,6 +31,7 @@ func (load *META_Global) Init_RunTask() {
 	load.Init_ProgramBegin()
 	load.ReadConfigFile()
 	load.Check_LoadConfig_Rule_1()
-	load.SqlSrv_Test()
+	//load.SqlSrv_Test()
+	//load.MongoDB_Test()
 }
 
