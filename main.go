@@ -3,23 +3,15 @@ package main
 import (
 	. "fmt"
 
-	. "project/workspace/sjm-poc-db/libs/configFile"
-	. "project/workspace/sjm-poc-db/libs/db-conn-sqlsrv"
-	. "project/workspace/sjm-poc-db/libs/db-conn-mongodb"
+	. "project/workspace/sjm-poc-db/libs"
 )
 
 func init() {
-	Config_T()
-	SqlSrv_T()
-	MongoDb_T()
+	Println()
 }
 
 func main() {
-	Println()
-
-
-
-	MockJson()
-
+	proc := Init_LoadMetadata()
+	proc.Init_RunTask()
 }
 
