@@ -13,7 +13,7 @@
         "sql-db-password": "P@ssw0rd",
         "sql-db-dbName": "test_db",
         "sql-db-table": "table1",
-        "sql-db-query": "use test_db; select top(10) * from table1 order by [text1] desc;"
+        "sql-db-query": "use test_db; select top(100) * from table1 order by [text1] desc;"
     },
     "mongodb": {
         "mgdb-host": "10.10.10.20",

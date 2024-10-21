@@ -15,6 +15,7 @@ var (
 	InitParam bool = true
 	ConfigFilename string = "config.json"
 	DebugMode int = 1
-	LoadConfig *JsonConfig
+	SqlSrv_CsvFilename string = ""
+	MongoDB_CsvFilename string = ""
 )
 

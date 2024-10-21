@@ -27,11 +27,19 @@ func (load *META_Global) Check_LoadConfig_Rule_1() {
 	Println()
 }
 
+func (load *META_Global) PatchFetchCsvOutputFilenames() {
+	SqlSrv_CsvFilename = load.LoadConfig.Options.SqlSrvOutputFile
+	MongoDB_CsvFilename = load.LoadConfig.Options.MongoDBOutputFile
+}
+
 func (load *META_Global) Init_RunTask() {
 	load.Init_ProgramBegin()
 	load.ReadConfigFile()
 	load.Check_LoadConfig_Rule_1()
+	load.PatchFetchCsvOutputFilenames()
 	//load.SqlSrv_Test()
-	load.MongoDB_Test()
+	//load.MongoDB_Test()
+	load.SqlSrv_RunQuery()
+
 }
 
