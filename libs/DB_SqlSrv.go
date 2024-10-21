@@ -13,7 +13,7 @@ import (
 
 // QueryHandler is a function type that processes each row of the query result.
 //type QueryHandler func(row []any)
-type QueryHandler func(row []any, writerRing [][]string)
+type QueryHandler func(row []any)
 
 func SqlSrv_Conn(dsn string, port int, username string, password string, dbName string) (*sql.DB, error) {
     connString := Sprintf("sqlserver://%s:%s@%s:%d?database=%s;connection timeout=3", username, password, dsn, port, dbName)
@@ -40,7 +40,7 @@ func SqlSrv_Ping(db *sql.DB) {
     Println("Connected to the database!")
 }
 
-func SqlSrv_Read(db *sql.DB, query string, handler QueryHandler, csvWriteBuf [][]string) error {
+func SqlSrv_Read(db *sql.DB, query string, handler QueryHandler) error {
     rows, err := db.Query(query)
     if err != nil {
         return Errorf("error executing query: %v", err)
@@ -69,7 +69,7 @@ func SqlSrv_Read(db *sql.DB, query string, handler QueryHandler, csvWriteBuf [][
         }
 
         // Call the handler for each row
-        handler(values, csvWriteBuf)
+        handler(values)
     }
 
     // Check for errors during iteration

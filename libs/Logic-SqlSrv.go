@@ -12,7 +12,7 @@ import (
     _ "github.com/denisenkom/go-mssqldb"
 )
 
-func SqlSrv_Job1(rows []any, __disabled [][]string) {
+func SqlSrv_Job1(rows []any) {
     for _, value := range rows {
         //Printf("%v\t", *(value.(*any))) // Print each value in the row
         scanResult := Sprintf( "%v", *(value.(*any)) )
@@ -36,8 +36,6 @@ func (load *META_Global) SqlSrv_Test() {
     }
     defer db.Close()
 
-    var records [][]string
-
     var sqlsrv_query string
 
 	/*
@@ -48,7 +46,7 @@ func (load *META_Global) SqlSrv_Test() {
 	sqlsrv_query = load.LoadConfig.SqlSrv.Query
 
     // Execute the query and pass the callback
-    if err := SqlSrv_Read(db, sqlsrv_query, SqlSrv_Job1, records); err != nil {
+    if err := SqlSrv_Read(db, sqlsrv_query, SqlSrv_Job1); err != nil {
         log.Fatal(err)
     }
 }
@@ -100,7 +98,7 @@ func (load *META_Global) SqlSrv_RunQuery() {
 	sqlsrv_query = load.LoadConfig.SqlSrv.Query
 
     // Execute the query and pass the callback
-    if err := SqlSrv_Read(db, sqlsrv_query, SqlSrv_Job2_GenCsv, records); err != nil {
+    if err := SqlSrv_Read(db, sqlsrv_query, SqlSrv_Job2_GenCsv); err != nil {
         log.Fatal(err)
     }
 
@@ -131,18 +129,20 @@ func writeRecords(writer *csv.Writer, records [][]string) error {
 		if err := writer.Write(record); err != nil {
 			return err
 		}
+        Println(record)
 	}
 	return nil
 }
 
-func SqlSrv_Job2_GenCsv(rows []any, writerRing [][]string) {
+func SqlSrv_Job2_GenCsv(rows []any) {
+    //fixInitSlice := []string{" "}
+
     for _, value := range rows {
         //Printf("%v\t", *(value.(*any))) // Print each value in the row
         
-        scanResult := Sprintf( "%v\t", *(value.(*any)) )
+        //scanResult := Sprintf( "%v\t", *(value.(*any)) )
+        scanResult := Sprintf( "%v", *(value.(*any)) )
         Printf(scanResult)
-        
-        //Println( *(value.(*any)) )
     }
     Println()
 }
