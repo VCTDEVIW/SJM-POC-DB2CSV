@@ -18,10 +18,10 @@ func (load *META_Global) MongoDB_Test() {
 	//username := os.Getenv("MONGO_USERNAME")
     //password := os.Getenv("MONGO_PASSWORD")
 
-	host := "10.10.10.20"
-	port := "27017"
-	username := "root"
-	password := "1234"
+	host := load.LoadConfig.MongoDB.Host
+	port := load.LoadConfig.MongoDB.Port
+	username := load.LoadConfig.MongoDB.Username
+	password := load.LoadConfig.MongoDB.Password
 
 
     // Connect to MongoDB
@@ -31,6 +31,7 @@ func (load *META_Global) MongoDB_Test() {
     }
     defer client.Disconnect(context.TODO())
 
+	/*
 	JsonQuery := `
 	{
         "text1": {
@@ -38,12 +39,14 @@ func (load *META_Global) MongoDB_Test() {
             "$ne": ""
         }
     }`
+	*/
 
 	//JsonQuery := `{ "text1": "hello" }`
+	JsonQuery := load.LoadConfig.Options.MongoDBEmbedJSON
 	Filter, _ := MongoDB_ParseQueryFromString(JsonQuery)
 
-	DbName := "test_db"        // Change the database name as needed
-	ColtName := "info" // Change the collection name as needed
+	DbName := load.LoadConfig.MongoDB.DBName        // Change the database name as needed
+	ColtName := load.LoadConfig.MongoDB.Collection // Change the collection name as needed
 	Schema := client.Database(DbName).Collection(ColtName)
 
     // Perform the read operation with the callback

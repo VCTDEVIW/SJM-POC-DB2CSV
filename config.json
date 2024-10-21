@@ -4,7 +4,7 @@
         "mongodb_output_file": "mongodb_output.csv",
         "mongodb_use_jsonQuery_file": "yes",
         "mongodb_use_embed_jsonQuery": "yes",
-        "mongodb_embed_json": "{ \"text1\":{ \"$exists\": true, \"$ne\": \"\" } }"
+        "mongodb_embed_json": "{ \"text2\":{ \"$exists\": true, \"$ne\": \"\" } }"
     },
     "sqlsrv": {
         "sql-db-host": "10.10.10.20",
