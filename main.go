@@ -1,12 +1,14 @@
 package main
 
 import (
-	_ "fmt"
-	_ "project/workspace/sjm-poc-db/libs/configFile"
+	. "fmt"
 	. "project/workspace/sjm-poc-db/libs/db-conn-sqlsrv"
+	. "project/workspace/sjm-poc-db/libs/db-conn-mongodb"
 )
 
 func main() {
-	Sqlsrv_T()
+	SqlSrv_T()
+	MongoDb_T()
+	Println()
 }
 
