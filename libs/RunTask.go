@@ -39,7 +39,9 @@ func (load *META_Global) Init_RunTask() {
 	load.PatchFetchCsvOutputFilenames()
 	//load.SqlSrv_Test()
 	//load.MongoDB_Test()
+	/*
 	load.SqlSrv_RunQuery()
-
+	load.SqlSrv_RunQuery()
+	*/
 }
 
