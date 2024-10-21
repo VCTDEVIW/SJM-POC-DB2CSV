@@ -14,6 +14,9 @@ import (
     _ "github.com/denisenkom/go-mssqldb"
 )
 
+// QueryHandler is a function type that processes each row of the query result.
+type QueryHandler func(row []any)
+
 // Define a struct to match the JSON structure
 type Config struct {
     Configuration struct {
@@ -27,8 +30,8 @@ type Config struct {
         SQLDBDbname   string `json:"sql-db-dbname"`
         SQLDBStname   string `json:"sql-db-stname"`
     } `json:"sqlsrv"`
-    MongoDB interface{} `json:"mongodb"` // Empty object
-    Misc    interface{} `json:"misc"`    // Empty object
+    MongoDB any `json:"mongodb"` // Empty object
+    Misc    any `json:"misc"`    // Empty object
 }
 
 // SqlSrv_Conn(...) establishes a connection to the SQL Server database.
@@ -58,28 +61,54 @@ func SqlSrv_Ping(db *sql.DB) {
     Println("Connected to the database!")
 }
 
-func SqlSrv_Read(db *sql.DB, sqlQuery string, callback_flowFunc func(*sql.Rows) error) {
-    rows, err := db.Query(sqlQuery)
+func SqlSrv_Read(db *sql.DB, query string, handler QueryHandler) error {
+    rows, err := db.Query(query)
     if err != nil {
-        log.Fatal("Error reading records: ", err.Error())
+        return Errorf("error executing query: %v", err)
     }
     defer rows.Close()
 
+    // Get column names and prepare a slice for the row data
+    columns, err := rows.Columns()
+    if err != nil {
+        return Errorf("error getting columns: %v", err)
+    }
+
+    // Create a slice to hold the values for each row
+    values := make([]any, len(columns))
+
+    // Iterate through the result set
     for rows.Next() {
-        if err := callback_flowFunc(rows); err != nil {
-            log.Fatal("Error processing row: ", err.Error())
+        // Prepare the slice for the current row
+        for i := range values {
+            values[i] = new(any) // Allocate memory for each column
         }
+
+        // Scan the row into the values slice
+        if err := rows.Scan(values...); err != nil {
+            return Errorf("error scanning row: %v", err)
+        }
+
+        // Call the handler for each row
+        handler(values)
     }
 
+    // Check for errors during iteration
     if err := rows.Err(); err != nil {
-        log.Fatal("Error iterating rows: ", err.Error())
+        return Errorf("error iterating over rows: %v", err)
     }
+
+    return nil
 }
 
-func sqlsrv_job1(rows *sql.Rows) (string, error) {
-    return "", nil
+func SqlSrv_Job1(rows []any) {
+    for _, value := range rows {
+        //Printf("%v\t", *(value.(*any))) // Print each value in the row
+        scanResult := Sprintf( "%v", *(value.(*any)) )
+        Printf(scanResult)
+    }
+    Println()
 }
-
 
 func GetCurrentWorkingDirectory() (string, error) {
     cwd, err := os.Getwd()
@@ -138,7 +167,14 @@ func main() {
     }
     defer db.Close()
 
-    
-    
+    var sqlsrv_query string
+
+    sqlsrv_query = `use test_db; select top(10) [rid],[text1],[text2],[updated_at] from table1;`
+    sqlsrv_query = `use test_db; select top(10) * from table1 order by [text1] desc;`
+
+    // Execute the query and pass the callback
+    if err := SqlSrv_Read(db, sqlsrv_query, SqlSrv_Job1); err != nil {
+        log.Fatal(err)
+    }
 }
 
