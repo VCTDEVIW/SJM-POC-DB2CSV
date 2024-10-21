@@ -97,10 +97,57 @@ func (load *META_Global) SqlSrv_RunQuery() {
     var sqlsrv_query string
 	sqlsrv_query = load.LoadConfig.SqlSrv.Query
 
-    // Execute the query and pass the callback
-    if err := SqlSrv_Read(db, sqlsrv_query, SqlSrv_Job2_GenCsv); err != nil {
-        log.Fatal(err)
+    // Execute the query
+    rows, err := db.Query(sqlsrv_query)
+    if err != nil {
+        log.Println("error executing query: %v", err)
     }
+    defer rows.Close()
+
+    // Write column headers
+    columns, err := rows.Columns()
+    if err != nil {
+        log.Fatalf("Error getting columns: %v", err)
+    }
+    if err := writer.Write(columns); err != nil {
+        log.Fatalf("Error writing headers to CSV: %v", err)
+    }
+
+    // Iterate through the result set
+    for rows.Next() {
+        // Create a slice to hold the values
+        values := make([]interface{}, len(columns))
+        valuePtrs := make([]interface{}, len(columns))
+        for i := range values {
+            valuePtrs[i] = &values[i]
+        }
+
+        // Scan the row into the pointers
+        if err := rows.Scan(valuePtrs...); err != nil {
+            log.Fatalf("Error scanning row: %v", err)
+        }
+
+        // Convert the values to strings
+        stringValues := make([]string, len(columns))
+        for i, val := range values {
+            if val != nil {
+                stringValues[i] = Sprintf("'%v'", val)
+            } else {
+                stringValues[i] = ""
+            }
+        }
+
+        // Write the row to CSV
+        if err := writer.Write(stringValues); err != nil {
+            log.Fatalf("Error writing row to CSV: %v", err)
+        }
+    }
+
+    // Check for errors during iteration
+    if err := rows.Err(); err != nil {
+        log.Println("error iterating over rows: %v", err)
+    }
+
 
     // Write records to CSV
 	if err := writeRecords(writer, records); err != nil {
@@ -108,7 +155,7 @@ func (load *META_Global) SqlSrv_RunQuery() {
 		return
 	}
 
-    Println("CSV file created successfully.")
+    Println("CSV file created from SqlSrv successfully.")
 }
 
 // createFile opens the file for writing, creating it if it does not exist or truncating it if it does.
@@ -132,18 +179,5 @@ func writeRecords(writer *csv.Writer, records [][]string) error {
         Println(record)
 	}
 	return nil
-}
-
-func SqlSrv_Job2_GenCsv(rows []any) {
-    //fixInitSlice := []string{" "}
-
-    for _, value := range rows {
-        //Printf("%v\t", *(value.(*any))) // Print each value in the row
-        
-        //scanResult := Sprintf( "%v\t", *(value.(*any)) )
-        scanResult := Sprintf( "%v", *(value.(*any)) )
-        Printf(scanResult)
-    }
-    Println()
 }
 
