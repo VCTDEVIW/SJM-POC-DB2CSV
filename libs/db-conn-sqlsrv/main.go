@@ -1,4 +1,4 @@
-package main
+package project
 
 import (
     "database/sql"
@@ -11,23 +11,6 @@ import (
 
     _ "github.com/denisenkom/go-mssqldb"
 )
-
-// Define a struct to match the JSON structure
-type Config struct {
-    Configuration struct {
-        OutputPath string `json:"outputPath"`
-    } `json:"configuration"`
-    SQLSrv struct {
-        SQLDBHost     string `json:"sql-db-host"`
-        SQLDBPort     int    `json:"sql-db-port"`
-        SQLDBUsername string `json:"sql-db-username"`
-        SQLDBPassword string `json:"sql-db-password"`
-        SQLDBDbname   string `json:"sql-db-dbname"`
-        SQLDBStname   string `json:"sql-db-stname"`
-    } `json:"sqlsrv"`
-    MongoDB interface{} `json:"mongodb"` // Empty object
-    Misc    interface{} `json:"misc"`    // Empty object
-}
 
 // getDBConnection establishes a connection to the SQL Server database.
 func getDBConnection(dsn string, port int, username string, password string, dbName string) (*sql.DB, error) {
@@ -86,7 +69,7 @@ func main() {
     // workspace\sjm-poc-db
     VAR_thisPath, _ := GetCurrentWorkingDirectory()
     VAR_pathPrefix := VAR_thisPath + GetOsPathSlash() + "workspace" + GetOsPathSlash() + "sjm-poc-db" + GetOsPathSlash()
-    VAR_configFile := VAR_pathPrefix + "sample_config.json"
+    VAR_configFile := VAR_pathPrefix + "simple_config.json"
 
     file, err := os.Open(VAR_configFile)
     if err != nil {
