@@ -1,0 +1,15 @@
+{
+    "configuration": {
+        "outputPath": ""
+    },
+    "sqlsrv": {
+        "sql-db-host": "10.10.10.20",
+        "sql-db-port": 1433,
+        "sql-db-username": "sa",
+        "sql-db-password": "P@ssw0rd",
+        "sql-db-dbname": "",
+        "sql-db-stname": ""
+    },
+    "mongodb": {},
+    "misc": {}
+}
