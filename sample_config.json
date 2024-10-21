@@ -1,15 +1,26 @@
 {
-    "configuration": {
-        "outputPath": ""
+    "options": {
+        "sqlsrv_output_file": "sqlsrv_output.csv",
+        "mongodb_output_file": "mongodb_output.csv",
+        "mongodb_use_jsonQuery_file": "yes",
+        "mongodb_use_embed_jsonQuery": "yes",
+        "mongodb_embed_json": "{ \"text1\":{ \"$exists\": true, \"$ne\": \"\" } }"
     },
     "sqlsrv": {
         "sql-db-host": "10.10.10.20",
         "sql-db-port": 1433,
         "sql-db-username": "sa",
         "sql-db-password": "P@ssw0rd",
-        "sql-db-dbname": "",
-        "sql-db-stname": ""
+        "sql-db-dbName": "test_db",
+        "sql-db-table": "table1",
+        "sql-db-query": "use test_db; select top(10) * from table1 order by [text1] desc;"
     },
-    "mongodb": {},
-    "misc": {}
+    "mongodb": {
+        "mgdb-host": "10.10.10.20",
+        "mgdb-port": "27017",
+        "mgdb-username": "root",
+        "mgdb-password": "1234",
+        "mgdb-dbName": "test_db",
+        "mgdb-collection": "info"
+    }
 }
