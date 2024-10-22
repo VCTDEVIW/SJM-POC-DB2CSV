@@ -14,7 +14,7 @@ type META_Global struct {
 var (
 	InitParam bool = true
 	ConfigFilename string = "config.json"
-	DebugMode int = 1
+	DebugMode int = 0
 	SqlSrv_CsvFilename string = ""
 	MongoDB_CsvFilename string = ""
 )

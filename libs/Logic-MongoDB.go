@@ -3,13 +3,13 @@ package project
 import (
     "context"
 	"encoding/json"
-	//"encoding/csv"
+	"encoding/csv"
     . "fmt"
     "log"
-    //"os"
+    "os"
 	_"time"
 
-	//"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson"
     _ "go.mongodb.org/mongo-driver/mongo"
     _ "go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -102,19 +102,55 @@ func (load *META_Global) MongoDB_RunQuery() {
 	}
 	defer cursor.Close(nil)
 
-	for cursor.Next(nil) {
-		var result map[string]interface{}
-		if err := cursor.Decode(&result); err != nil {
-			log.Println(err)
-		}
-		// Call the provided callback with the result
-		jsonDoc, _ := json.MarshalIndent(result, "", "  ")
-		Printf("Document found: %s\n", jsonDoc)
-	}
+	outputFilename := MongoDB_CsvFilename
+
+	// Open CSV file
+    file, err := os.Create(outputFilename)
+    if err != nil {
+        log.Fatal(err)
+    }
+    defer file.Close()
+
+    writer := csv.NewWriter(file)
+    defer writer.Flush()
+
+	var header []string
+    records := [][]string{}
+
+
+	for cursor.Next(context.TODO()) {
+        var document bson.M
+        if err := cursor.Decode(&document); err != nil {
+            log.Fatal(err)
+        }
+
+        // Collect unique keys for the header
+        if len(header) == 0 {
+            for key := range document {
+                header = append(header, key)
+            }
+            // Write header to CSV
+            writer.Write(header)
+        }
+
+        // Create a record for the current document
+        record := make([]string, len(header))
+        for i, key := range header {
+            record[i] = Sprintf("'%v'", document[key])
+        }
+        records = append(records, record)
+    }
 
 	if err := cursor.Err(); err != nil {
 		log.Println(err)
 	}
 
+	// Write records to CSV
+	if err := writeRecords(writer, records); err != nil {
+		Println("Error writing records to file:", err)
+		return
+	}
+
+	Println("CSV file created from MongoDB successfully.")
 }
 
