@@ -1,0 +1,30 @@
+{
+    "options": {
+      "API_WebPort": 8080,
+      "API_SqlJob_URI": "sqlsrv-job",
+      "API_MongoDBJob_URI": "mongodb-job",
+      "API_AccessGetToken": "AbcD@1234",
+      "SqlSrv_output_file": "SqlSrv_output.csv",
+      "mongodb_output_file": "mongodb_output.csv",
+      "mongodb_use_jsonQuery_file": "yes",
+      "mongodb_use_embed_jsonQuery": "yes",
+      "mongodb_embed_json": "{ \"text1\":{ \"$exists\": true, \"$ne\": \"\" } }"
+    },
+    "SqlSrv": {
+      "sql-db-host": "10.10.10.20",
+      "sql-db-port": 1433,
+      "sql-db-username": "sa",
+      "sql-db-password": "P@ssw0rd",
+      "sql-db-dbName": "test_db",
+      "sql-db-table": "table1",
+      "sql-db-query": ""
+    },
+    "mongodb": {
+      "mgdb-host": "10.10.10.20",
+      "mgdb-port": "27017",
+      "mgdb-username": "root",
+      "mgdb-password": "1234",
+      "mgdb-dbName": "test_db",
+      "mgdb-collection": "info"
+    }
+  }

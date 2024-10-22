@@ -10,6 +10,7 @@ import (
 
 func init() {
 	Println()
+	InitConfigFile()
 }
 
 func main() {

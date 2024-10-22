@@ -1,52 +1,13 @@
-package project
+package main
 
 import (
 	. "fmt"
 	"os"
 	"encoding/json"
+	. "project/workspace/sjm-poc-db/libs"
 )
 
-func FetchConfigFile(local_DebugMode int) string {
-	if local_DebugMode == 1 {
-		Println("Debug mode is set to ON [=1].")
-
-		VAR_thisPath, _ := GetCurrentWorkingDirectory()
-		VAR_pathPrefix := VAR_thisPath + GetOsPathSlash()
-		VAR_configFile := VAR_pathPrefix + ConfigFilename
-		return VAR_configFile
-	} else {
-		Println("Debug mode is set to OFF [=0].")
-
-		return ConfigFilename
-	}
-}
-
-func (load *META_Global) ReadConfigFile() {
-	// Open the JSON file
-    file, err := os.Open(FetchConfigFile(load.DebugMode))
-    if err != nil {
-        Println("Error opening config.json:", err)
-        return
-    }
-    defer file.Close()
-
-    // Create an instance of Config
-    var Config JsonConfig
-
-    // Decode the JSON data into the config struct
-    decoder := json.NewDecoder(file)
-    err = decoder.Decode(&Config)
-    if err != nil {
-        Println("Error decoding JSON:", err)
-        return
-    }
-
-    // Print the loaded configuration
-    Printf("Loaded configuration: %+v\n", Config)
-    load.LoadConfig = &Config
-}
-
-func InitConfigFile() {
+func main() {
 	filename := ConfigFilename
 
     // Check if the file exists
@@ -101,5 +62,37 @@ func InitConfigFile() {
             Println("config.json already exists and is not empty.")
         }
     }
+}
+
+func GenInitConfigFile() JsonConfig {
+	config := JsonConfig{}
+    
+    // Populate the config structure
+	config.Options.API_WebPort = 8080
+	config.Options.API_SqlJob_URI = "sqlsrv-job"
+    config.Options.API_MongoDBJob_URI = "mongodb-job"
+	config.Options.API_AccessGetToken = "AbcD@1234"
+    config.Options.SqlSrvOutputFile = "SqlSrv_output.csv"
+    config.Options.MongoDBOutputFile = "mongodb_output.csv"
+    config.Options.MongoDBUseJSONQueryFile = "yes"
+    config.Options.MongoDBUseEmbedJSONQuery = "yes"
+    config.Options.MongoDBEmbedJSON = "{ \"text1\":{ \"$exists\": true, \"$ne\": \"\" } }"
+    
+    config.SqlSrv.Host = "10.10.10.20"
+    config.SqlSrv.Port = 1433
+    config.SqlSrv.Username = "sa"
+    config.SqlSrv.Password = "P@ssw0rd"
+    config.SqlSrv.DBName = "test_db"
+    config.SqlSrv.Table = "table1"
+    config.SqlSrv.Query = ""
+    
+    config.MongoDB.Host = "10.10.10.20"
+    config.MongoDB.Port = "27017"
+    config.MongoDB.Username = "root"
+    config.MongoDB.Password = "1234"
+    config.MongoDB.DBName = "test_db"
+    config.MongoDB.Collection = "info"
+
+	return config
 }
 
